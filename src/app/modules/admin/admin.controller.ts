@@ -12,6 +12,58 @@ const getAllAdmin = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Admin fetched successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: true,
+      message: error?.name || "Something went wrong",
+      error: error,
+    });
+  }
+};
+const getByIdFromDb = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await adminServices.getByIdFromDb(id);
+    res.status(200).json({
+      success: true,
+      message: "Admin fetched successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: true,
+      message: error?.name || "Something went wrong",
+      error: error,
+    });
+  }
+};
+const updateDataIntoDb = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await adminServices.updateDataIntoDb(id, req.body);
+    res.status(200).json({
+      success: true,
+      message: "Admin updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: true,
+      message: error?.name || "Something went wrong",
+      error: error,
+    });
+  }
+};
+const deleteFromDb = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await adminServices.deleteFromDb(id);
+    res.status(200).json({
+      success: true,
+      message: "Admin deleted successfully",
       data: result,
     });
   } catch (error) {
@@ -25,4 +77,7 @@ const getAllAdmin = async (req: Request, res: Response) => {
 
 export const adminControllers = {
   getAllAdmin,
+  getByIdFromDb,
+  updateDataIntoDb,
+  deleteFromDb,
 };
