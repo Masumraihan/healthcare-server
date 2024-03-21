@@ -7,5 +7,6 @@ router.get("/", adminControllers.getAllAdmin);
 router.get("/:id", adminControllers.getByIdFromDb);
 router.patch("/:id", adminControllers.updateDataIntoDb);
 router.delete("/:id", adminControllers.deleteFromDb);
+router.delete("/soft/:id", adminControllers.softDeleteFromDb);
 
 export const adminRoutes = router;
