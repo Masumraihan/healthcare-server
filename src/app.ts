@@ -1,7 +1,8 @@
 import cors from "cors";
-import express, { Application, Request, Response } from "express";
-import { userRoutes } from "./app/modules/User/user.route";
-import { adminRoutes } from "./app/modules/admin/admin.route";
+import express, { Application, Request, Response, NextFunction } from "express";
+import router from "./app/routes";
+import { StatusCodes } from "http-status-codes";
+import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 
 const app: Application = express();
 app.use(cors());
@@ -16,7 +17,20 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1", router);
+
+// GLOBAL ERROR HANDLER
+
+app.use(globalErrorHandler);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(StatusCodes.NOT_FOUND).json({
+    success: false,
+    message: "API NOT FOUND",
+    error: {
+      path: req.originalUrl,
+      message: "Your requested path is not found!",
+    },
+  });
+});
 
 export default app;

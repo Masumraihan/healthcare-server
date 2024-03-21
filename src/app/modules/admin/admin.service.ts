@@ -3,8 +3,6 @@ import { paginationHelper } from "../../../helpers/paginationHelper";
 import prisma from "../../../shared/prisma";
 import { adminSearchableFields } from "./admin.contant";
 
-
-
 const getAllAdmin = async (query: Record<string, unknown>, option: any) => {
   const andConditions: Prisma.AdminWhereInput[] = [];
   const { searchTerm, ...filterQuery } = query;
@@ -75,7 +73,7 @@ const getByIdFromDb = async (id: string): Promise<Admin | null> => {
   return result;
 };
 
-const updateDataIntoDb = async (id: string, payload: Partial<Admin | null>): Promise<Admin> => {
+const updateDataIntoDb = async (id: string, payload: Partial<Admin>): Promise<Admin> => {
   await prisma.admin.findUniqueOrThrow({
     where: {
       id,
