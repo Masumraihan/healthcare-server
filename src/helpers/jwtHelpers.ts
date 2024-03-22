@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import { UserRole } from "@prisma/client";
 
 const generateToken = (
   payload: { email: string; role: UserRole },
-  secret: string,
+  secret: Secret,
   expiresIn: string,
 ) => {
   const token = jwt.sign(payload, secret, {
@@ -13,6 +13,11 @@ const generateToken = (
   return token;
 };
 
+const verifyToken = (token: string, secret: Secret) => {
+  return jwt.verify(token, secret) as JwtPayload;
+};
+
 export const jwtHelpers = {
   generateToken,
+  verifyToken,
 };
