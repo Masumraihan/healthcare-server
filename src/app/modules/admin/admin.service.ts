@@ -1,5 +1,5 @@
 import { Admin, Prisma, UserStatus } from "@prisma/client";
-import { paginationHelper } from "../../../helpers/paginationHelper";
+import { paginationHelper } from "../../../helpers/paginationHelpers";
 import prisma from "../../../shared/prisma";
 import { adminSearchableFields } from "./admin.contant";
 import { IAdminFilterRequest } from "./admin.interface";
