@@ -1,19 +1,12 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
-import { adminServices } from "./admin.service";
-import pick from "../../../shared/pick";
-import { adminFilterableFields } from "./admin.contant";
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import catchAsync from "../../../shared/catchAsync";
+import pick from "../../../shared/pick";
 import sendResponse from "../../../shared/sendResponse";
+import { adminFilterableFields } from "./admin.contant";
+import { adminServices } from "./admin.service";
 
-const catchAsync = (fn: RequestHandler) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await fn(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
-};
+
 
 const getAllAdmin = catchAsync(async (req: Request, res: Response) => {
   const query = pick(req.query, adminFilterableFields);
