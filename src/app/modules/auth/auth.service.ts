@@ -67,7 +67,43 @@ const refreshToken = async (token: string) => {
   return { accessToken };
 };
 
+const changePassword = async (
+  user: any,
+  payload: {
+    oldPassword: string;
+    newPassword: string;
+  },
+) => {
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  const isCorrectPassword: boolean = await bcrypt.compare(payload.oldPassword, userData.password);
+  if (!isCorrectPassword) {
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "old password incorrect");
+  }
+  const hashedPassword = await bcrypt.hash(payload.newPassword, 12);
+
+  await prisma.user.update({
+    where: {
+      email: user.email,
+    },
+    data: {
+      password: hashedPassword,
+      needsPasswordChange: false,
+    },
+  });
+
+  return {
+    message: "Password Changed Successfully!",
+  };
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
+  changePassword,
 };
