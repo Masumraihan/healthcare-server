@@ -1,7 +1,6 @@
-import { AnyZodObject, z } from "zod";
-import express, { NextFunction, Request, Response } from "express";
-import { adminControllers } from "./admin.controller";
+import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
+import { adminControllers } from "./admin.controller";
 import { adminValidationSchemas } from "./admin.validation";
 
 const router = express.Router();
