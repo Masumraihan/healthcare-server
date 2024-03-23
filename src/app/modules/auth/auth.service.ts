@@ -4,6 +4,8 @@ import { jwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
+import ApiError from "../../errors/ApiError";
+import { StatusCodes } from "http-status-codes";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
@@ -15,7 +17,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
 
   const isCorrectPassword: boolean = await bcrypt.compare(payload.password, userData.password);
   if (!isCorrectPassword) {
-    throw new Error("password incorrect");
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "password incorrect");
   }
 
   const accessToken = jwtHelpers.generateToken(
@@ -43,7 +45,7 @@ const refreshToken = async (token: string) => {
   try {
     decodedData = jwtHelpers.verifyToken(token, config.jwt.refresh_token_secret as Secret);
   } catch (error) {
-    throw new Error("you are not authorized");
+    throw new ApiError(StatusCodes.UNAUTHORIZED, "you are not authorized");
   }
 
   const userData = await prisma.user.findUniqueOrThrow({
