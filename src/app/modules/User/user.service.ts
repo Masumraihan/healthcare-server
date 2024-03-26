@@ -1,4 +1,4 @@
-import { Prisma, UserRole } from "@prisma/client";
+import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request } from "express";
 import { fileUploader } from "../../../helpers/fileUploader";
@@ -96,7 +96,7 @@ const createPatient = async (req: Request) => {
   return result;
 };
 
-const getAllAdmin = async (query: any, option: IPaginationOptions) => {
+const getAllUser = async (query: any, option: IPaginationOptions) => {
   const andConditions: Prisma.UserWhereInput[] = [];
   const { searchTerm, ...filterQuery } = query;
   const { page, limit, skip } = paginationHelper.calculatePagination(option);
@@ -137,6 +137,23 @@ const getAllAdmin = async (query: any, option: IPaginationOptions) => {
         : {
             createdAt: "desc",
           },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true,
+      needsPasswordChange: true,
+      admin: true,
+      patient: true,
+      doctor: true,
+    },
+    //include: {
+    //  admin: true,
+    //  patient: true,
+    //  doctor: true,
+    //},
   });
 
   const total = await prisma.user.count({
@@ -153,8 +170,26 @@ const getAllAdmin = async (query: any, option: IPaginationOptions) => {
   };
 };
 
+const changeProfileStatus = async (id: string, data: { status: UserStatus }) => {
+  const userData = await prisma.user.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  const result = await prisma.user.update({
+    where: {
+      id,
+    },
+    data,
+  });
+  return result;
+};
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
+  getAllUser,
+  changeProfileStatus,
 };

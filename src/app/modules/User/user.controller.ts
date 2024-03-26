@@ -3,6 +3,8 @@ import { userService } from "./user.service";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import pick from "../../../shared/pick";
+import { userFilterableFields } from "./user.contant";
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createAdmin(req);
@@ -32,8 +34,45 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllUser = catchAsync(async (req: Request, res: Response) => {
+  const query = pick(req.query, userFilterableFields);
+  const option = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+  const result = await userService.getAllUser(query, option);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Users fetched successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+//const getByIdFromDb = catchAsync(async (req: Request, res: Response) => {
+//  const { id } = req.params;
+//  const result = await userService.getAllUser(id);
+//  sendResponse(res, {
+//    statusCode: StatusCodes.OK,
+//    success: true,
+//    message: "Admin fetched successfully",
+//    data: result,
+//  });
+//});
+
+const changeProfileStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userService.changeProfileStatus(id, req.body);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User profile status changed",
+    data: result,
+  });
+});
+
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
+  getAllUser,
+  changeProfileStatus,
 };
