@@ -31,7 +31,7 @@ router.post(
   fileUploader.upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidations.createPatient.parse(JSON.parse(req.body.data));
-    return userController.createDoctor(req, res, next);
+    return userController.createPatient(req, res, next);
   },
 );
 
