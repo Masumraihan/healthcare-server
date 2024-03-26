@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | undefined> => {
-
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(file.path, (error: Error, result: ICloudinaryResponse) => {
       fs.unlinkSync(file.path);
