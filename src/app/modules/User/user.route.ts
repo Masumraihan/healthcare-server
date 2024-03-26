@@ -40,7 +40,7 @@ router.post(
 router.patch(
   "/:id/status",
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-  validateRequest(userValidations.changeStatus),
+  validateRequest(userValidations.changeProfileStatus),
   userController.changeProfileStatus,
 );
 

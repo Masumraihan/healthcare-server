@@ -41,7 +41,7 @@ const createPatient = z.object({
   }),
 });
 
-const changeStatus = z.object({
+const changeProfileStatus = z.object({
   body: z.object({
     status: z.enum([UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.DELETED]),
   }),
@@ -51,5 +51,5 @@ export const userValidations = {
   createAdmin,
   createDoctor,
   createPatient,
-  changeStatus,
+  changeProfileStatus,
 };
