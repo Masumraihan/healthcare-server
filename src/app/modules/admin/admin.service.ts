@@ -3,7 +3,7 @@ import { paginationHelper } from "../../../helpers/paginationHelpers";
 import prisma from "../../../shared/prisma";
 import { adminSearchableFields } from "./admin.contant";
 import { IAdminFilterRequest } from "./admin.interface";
-import { IPaginationOptions } from "../../interface/pagination";
+import { IPaginationOptions } from "../../interfaces/pagination";
 
 const getAllAdmin = async (query: IAdminFilterRequest, option: IPaginationOptions) => {
   const andConditions: Prisma.AdminWhereInput[] = [];
