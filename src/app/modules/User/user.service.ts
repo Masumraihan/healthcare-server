@@ -1,14 +1,13 @@
 import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { Request } from "express";
+import { JwtPayload } from "jsonwebtoken";
 import { fileUploader } from "../../../helpers/fileUploader";
+import { paginationHelper } from "../../../helpers/paginationHelpers";
 import prisma from "../../../shared/prisma";
 import { IFile } from "../../interfaces/file";
 import { IPaginationOptions } from "../../interfaces/pagination";
-import { paginationHelper } from "../../../helpers/paginationHelpers";
-import { adminSearchableFields } from "../admin/admin.contant";
-import { userSearchableFields } from "./user.contant";
-import { JwtPayload } from "jsonwebtoken";
+import { userSearchableFields } from "./user.constant";
 
 const createAdmin = async (req: Request) => {
   const file = req.file;

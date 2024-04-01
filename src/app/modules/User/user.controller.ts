@@ -4,7 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { StatusCodes } from "http-status-codes";
 import pick from "../../../shared/pick";
-import { userFilterableFields } from "./user.contant";
+import { userFilterableFields } from "./user.constant";
 
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createAdmin(req);
