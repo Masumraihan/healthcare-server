@@ -8,6 +8,7 @@ import { IPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../../helpers/paginationHelpers";
 import { adminSearchableFields } from "../admin/admin.contant";
 import { userSearchableFields } from "./user.contant";
+import { JwtPayload } from "jsonwebtoken";
 
 const createAdmin = async (req: Request) => {
   const file = req.file;
@@ -186,10 +187,54 @@ const changeProfileStatus = async (id: string, data: { status: UserStatus }) => 
   return result;
 };
 
+const getMyProfile = async (user: JwtPayload) => {
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+    select: {
+      id: true,
+      status: true,
+      email: true,
+      role: true,
+      needsPasswordChange: true,
+    },
+  });
+
+  let profileData;
+  if (userInfo.role === UserRole.SUPER_ADMIN) {
+    profileData = await prisma.admin.findUniqueOrThrow({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo.role === UserRole.ADMIN) {
+    profileData = await prisma.admin.findUniqueOrThrow({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo.role === UserRole.DOCTOR) {
+    profileData = await prisma.doctor.findUniqueOrThrow({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  } else if (userInfo.role === UserRole.PATIENT) {
+    profileData = await prisma.patient.findUniqueOrThrow({
+      where: {
+        email: userInfo.email,
+      },
+    });
+  }
+  return { ...userInfo, ...profileData };
+};
+
 export const userService = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllUser,
   changeProfileStatus,
+  getMyProfile,
 };
