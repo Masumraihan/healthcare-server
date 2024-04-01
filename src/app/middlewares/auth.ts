@@ -17,6 +17,7 @@ const auth = (...roles: UserRole[]) => {
       if (roles.length && !roles.includes(decodedData.role)) {
         throw new ApiError(StatusCodes.FORBIDDEN, "you are not authorized");
       }
+
       req.user = decodedData;
       next();
     } catch (error) {
