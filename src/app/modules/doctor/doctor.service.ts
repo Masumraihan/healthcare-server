@@ -7,7 +7,7 @@ import { IPaginationOptions } from "../../interfaces/pagination";
 
 const getAllDoctor = async (query: IDoctorFilterRequest, option: IPaginationOptions) => {
   const andConditions: Prisma.DoctorWhereInput[] = [];
-  const { searchTerm, ...filterQuery } = query;
+  const { searchTerm, specialties, ...filterQuery } = query;
   const { page, limit, skip } = paginationHelper.calculatePagination(option);
 
   if (query.searchTerm) {
@@ -35,6 +35,21 @@ const getAllDoctor = async (query: IDoctorFilterRequest, option: IPaginationOpti
     });
   }
 
+  if (specialties && specialties.length > 0) {
+    andConditions.push({
+      doctorSpecialties: {
+        some: {
+          specialties: {
+            title: {
+              contains: specialties,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    });
+  }
+
   const whereCondition: Prisma.DoctorWhereInput = { AND: andConditions };
 
   const result = await prisma.doctor.findMany({
@@ -49,6 +64,13 @@ const getAllDoctor = async (query: IDoctorFilterRequest, option: IPaginationOpti
         : {
             createdAt: "desc",
           },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
+    },
   });
 
   const total = await prisma.doctor.count({
@@ -103,17 +125,16 @@ const updateIntoDb = async (id: string, payload: any) => {
             },
           });
         }
-
-        const createdSpecialties = specialties.filter((specialty: any) => !specialty.isDeleted);
-        if (createdSpecialties.length) {
-          for (const specialty of createdSpecialties) {
-            await transactionClient.doctorSpecialties.create({
-              data: {
-                doctorId: id,
-                specialtiesId: specialty.specialtiesId,
-              },
-            });
-          }
+      }
+      const createdSpecialties = specialties.filter((specialty: any) => !specialty.isDeleted);
+      if (createdSpecialties.length) {
+        for (const specialty of createdSpecialties) {
+          await transactionClient.doctorSpecialties.create({
+            data: {
+              doctorId: id,
+              specialtiesId: specialty.specialtiesId,
+            },
+          });
         }
       }
     }
