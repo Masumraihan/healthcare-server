@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "patient_health_data" ALTER COLUMN "hasAllergies" DROP NOT NULL,
+ALTER COLUMN "hasAllergies" SET DEFAULT false,
+ALTER COLUMN "smokingStatus" DROP NOT NULL,
+ALTER COLUMN "smokingStatus" SET DEFAULT false,
+ALTER COLUMN "dietaryPreference" DROP NOT NULL,
+ALTER COLUMN "pregnancyStatus" DROP NOT NULL,
+ALTER COLUMN "pregnancyStatus" SET DEFAULT false,
+ALTER COLUMN "mentalHealthHistory" DROP NOT NULL,
+ALTER COLUMN "immunizationStatus" DROP NOT NULL,
+ALTER COLUMN "hasPastSurgery" DROP NOT NULL,
+ALTER COLUMN "hasPastSurgery" SET DEFAULT false,
+ALTER COLUMN "recentAnxiety" DROP NOT NULL,
+ALTER COLUMN "recentAnxiety" SET DEFAULT false,
+ALTER COLUMN "recentDepression" DROP NOT NULL,
+ALTER COLUMN "recentDepression" SET DEFAULT false,
+ALTER COLUMN "maritalStatus" SET DEFAULT 'UNMARRIED';

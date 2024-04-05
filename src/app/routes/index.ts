@@ -1,13 +1,14 @@
-import express from "express";
+import express, { Router } from "express";
 import { userRoutes } from "../modules/User/user.route";
 import { adminRoutes } from "../modules/admin/admin.route";
 import { authRoutes } from "../modules/auth/auth.route";
 import { specialtiesRoutes } from "../modules/specialties/specialties.route";
 import { doctorRoutes } from "../modules/doctor/doctor.route";
+import { patientRoutes } from "../modules/patient/patient.route";
 
 const router = express.Router();
 
-const moduleRoutes = [
+const moduleRoutes: { path: string; route: Router }[] = [
   {
     path: "/auth",
     route: authRoutes,
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: "/specialties",
     route: specialtiesRoutes,
+  },
+  {
+    path: "/patient",
+    route: patientRoutes,
   },
 ];
 
