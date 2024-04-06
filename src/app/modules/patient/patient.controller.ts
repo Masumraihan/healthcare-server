@@ -39,8 +39,30 @@ const updateIntoDb = catchAsync(async (req, res) => {
   });
 });
 
+const deleteById = catchAsync(async (req, res) => {
+  const result = await patientServices.deleteById(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Patient deleted successfully",
+    data: result,
+  });
+});
+
+const softDeleteById = catchAsync(async (req, res) => {
+  const result = await patientServices.softDeleteById(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Patient deleted successfully",
+    data: result,
+  });
+});
+
 export const patientController = {
   getAllPatient,
   getByIdFromDb,
   updateIntoDb,
+  deleteById,
+  softDeleteById,
 };

@@ -8,5 +8,7 @@ const router = express.Router();
 router.get("/", patientController.getAllPatient);
 router.get("/:id", patientController.getByIdFromDb);
 router.patch("/:id", patientController.updateIntoDb);
+router.delete("/:id", patientController.deleteById);
+router.delete("/soft/:id", patientController.softDeleteById);
 
 export const patientRoutes = router;
