@@ -45,7 +45,7 @@ const insertIntoDb = async (payload: ISchedule): Promise<Schedule[]> => {
       //  UPDATE 30 MINUTES INTERVAL FOR CREATING SCHEDULE FOR EVERY 30 MINUTES
       startDateTime.setMinutes(startDateTime.getMinutes() + intervalTime);
     }
-    // UPDATE DATE FOR CREATE EACH DATE SCHEDULE WHICH PROVIDED FROM CLIENT THROW PAYLOAD
+    // UPDATE DATE FOR CREATE EACH DATE SCHEDULE WHICH PROVIDED FROM CLIENT THROW PAYLOAD.
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return schedules;
