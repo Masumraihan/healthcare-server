@@ -3,6 +3,8 @@ import prisma from "../../../shared/prisma";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../../helpers/paginationHelpers";
 import { Prisma } from "@prisma/client";
+import ApiError from "../../errors/ApiError";
+import { StatusCodes } from "http-status-codes";
 
 const insertIntoDb = async (user: JwtPayload, payload: { scheduleIds: string[] }) => {
   const doctorData = await prisma.doctor.findUniqueOrThrow({
@@ -93,7 +95,38 @@ const getMySchedules = async (query: any, option: IPaginationOptions, user: JwtP
   };
 };
 
+const deleteFromDb = async (scheduleId: string, user: JwtPayload) => {
+  const doctorData = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const isBooked = await prisma.doctorSchedules.findFirst({
+    where: {
+      doctorId: doctorData.id,
+      scheduleId: scheduleId,
+      isBooked: true,
+    },
+  });
+
+  if (isBooked) {
+    throw new ApiError(StatusCodes.BAD_REQUEST, "You can not delete any booked schedule");
+  }
+
+  const result = await prisma.doctorSchedules.delete({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctorData.id,
+        scheduleId: scheduleId,
+      },
+    },
+  });
+  return result;
+};
+
 export const doctorScheduleService = {
   insertIntoDb,
   getMySchedules,
+  deleteFromDb,
 };
