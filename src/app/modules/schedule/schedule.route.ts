@@ -13,5 +13,6 @@ router.post(
   validateRequest(scheduleValidations.create),
   scheduleController.insertIntoDb,
 );
+router.get("/", auth(UserRole.DOCTOR), scheduleController.getAllFromDb);
 
 export const scheduleRoutes = router;
