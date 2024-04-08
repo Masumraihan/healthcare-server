@@ -5,6 +5,8 @@ import { ISchedule, IScheduleFilter } from "./schedule.interface";
 import { IPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../../helpers/paginationHelpers";
 import { JwtPayload } from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
+import ApiError from "../../errors/ApiError";
 
 const insertIntoDb = async (payload: ISchedule): Promise<Schedule[]> => {
   const intervalTime = 30;
@@ -135,7 +137,47 @@ const getAllFromDb = async (
   };
 };
 
+const getByIdFromDb = async (id: string) => {
+  const result = await prisma.schedule.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      doctorSchedules: true,
+    },
+  });
+  return result;
+};
+
+const deleteById = async (id: string) => {
+  const doctorSchedules = await prisma.doctorSchedules.findMany({
+    where: {
+      scheduleId: id,
+    },
+  });
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    if (doctorSchedules.length > 0) {
+      await transactionClient.doctorSchedules.deleteMany({
+        where: {
+          scheduleId: id,
+        },
+      });
+    }
+    const deletedSchedule = await transactionClient.schedule.delete({
+      where: {
+        id,
+      },
+    });
+    return deletedSchedule;
+  });
+
+  return result;
+};
+
 export const scheduleService = {
   insertIntoDb,
   getAllFromDb,
+  getByIdFromDb,
+  deleteById,
 };

@@ -28,7 +28,29 @@ const getAllFromDb = catchAsync(async (req, res) => {
   });
 });
 
+const getByIdFromDb = catchAsync(async (req, res) => {
+  const result = await scheduleService.getByIdFromDb(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedule fetched successfully!",
+    data: result,
+  })
+});
+
+const deleteById = catchAsync(async (req, res) => {
+  const result = await scheduleService.deleteById(req.params.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Schedule deleted successfully",
+    data: result,
+  });
+})
+
 export const scheduleController = {
   insertIntoDb,
   getAllFromDb,
+  getByIdFromDb,
+  deleteById,
 };

@@ -23,6 +23,18 @@ const getMySchedules = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
+    message: "My Schedule fetched successfully!",
+    data: result,
+  });
+});
+const getAllFromDb = catchAsync(async (req, res) => {
+  const filterQuery = pick(req.query, ["startDate", "endDate", "isBooked"]);
+  const option = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const user = req.user as JwtPayload;
+  const result = await doctorScheduleService.getAllFromDb(filterQuery, option, user);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
     message: "Schedule fetched successfully!",
     data: result,
   });
@@ -43,4 +55,5 @@ export const doctorScheduleController = {
   insertIntoDb,
   getMySchedules,
   deleteFromDb,
+  getAllFromDb,
 };
