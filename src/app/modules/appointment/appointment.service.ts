@@ -51,6 +51,18 @@ const createAppointmentIntoDb = async (payload: any, user: JwtPayload) => {
         appointmentId: appointmentData.id,
       },
     });
+
+    const today = new Date();
+    const transactionId = `mr-healthcare-${today.getFullYear()}-${today.getMonth()}-${today.getDay()}-${today.getHours()}-${today.getMinutes()}-${today.getSeconds()}`;
+
+    await tx.payment.create({
+      data: {
+        appointmentId: appointmentData.id,
+        amount: doctorData.appointmentFee,
+        transactionId,
+      },
+    });
+
     return appointmentData;
   });
 
