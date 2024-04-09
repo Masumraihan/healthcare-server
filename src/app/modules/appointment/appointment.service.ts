@@ -72,6 +72,60 @@ const createAppointmentIntoDb = async (payload: any, user: JwtPayload) => {
   return result;
 };
 
+const getAllFromDb = async (query: any, option: IPaginationOptions) => {
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+  const { page, limit, skip } = paginationHelper.calculatePagination(option);
+  const { ...filterQuery } = query;
+
+  if (Object.keys(filterQuery).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterQuery).map((key) => ({
+        [key]: {
+          equals: (filterQuery as any)[key],
+        },
+      })),
+    });
+  }
+
+  const whereCondition: Prisma.AppointmentWhereInput = { AND: andConditions };
+
+  const result = await prisma.appointment.findMany({
+    where: whereCondition,
+    skip,
+    take: limit,
+    orderBy:
+      option.sortBy && option.sortOrder
+        ? {
+            [option.sortBy]: option.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+    include: {
+      doctor: true,
+      patient: {
+        include: {
+          medicalReport: true,
+          PatientHealthData: true,
+        },
+      },
+      schedule: true,
+    },
+  });
+
+  const total = await prisma.appointment.count({
+    where: whereCondition,
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
 const getMyAppointment = async (user: JwtPayload, query: any, option: IPaginationOptions) => {
   const andConditions: Prisma.AppointmentWhereInput[] = [];
   const { page, limit, skip } = paginationHelper.calculatePagination(option);
@@ -148,5 +202,6 @@ const getMyAppointment = async (user: JwtPayload, query: any, option: IPaginatio
 
 export const appointmentService = {
   createAppointmentIntoDb,
+  getAllFromDb,
   getMyAppointment,
 };

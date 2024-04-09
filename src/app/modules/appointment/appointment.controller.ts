@@ -16,6 +16,18 @@ const createAppointmentIntoDb = catchAsync(async (req, res) => {
   });
 });
 
+const getAllFromDb = catchAsync(async (req, res) => {
+  const filterQuery = pick(req.query, ["status", "paymentStatus"]);
+  const option = pick(req.query, ["sortBy", "sortOrder", "page", "limit"]);
+
+  const result = await appointmentService.getAllFromDb(filterQuery, option);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Appointment fetched successfully!",
+    data: result,
+  });
+});
 const getMyAppointment = catchAsync(async (req, res) => {
   const user = req.user as JwtPayload;
 
@@ -33,5 +45,6 @@ const getMyAppointment = catchAsync(async (req, res) => {
 
 export const appointmentController = {
   createAppointmentIntoDb,
+  getAllFromDb,
   getMyAppointment,
 };
