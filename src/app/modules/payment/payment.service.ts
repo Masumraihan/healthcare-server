@@ -30,19 +30,19 @@ const initPayment = async (paymentId: string) => {
   return { paymentUrl: result.GatewayPageURL };
 };
 
-const validatePayment = async (payload: any) => {
-  //if (!payload || payload.status !== "VALID") {
-  //  return { message: "Invalid payment data" };
-  //}
+const validatePayment = async (payload: Record<string, unknown>) => {
+  if (!payload || payload.status !== "VALID") {
+    return { message: "Invalid payment data" };
+  }
 
-  //const response = await sslService.validatePayment(payload);
+  const response = await sslService.validatePayment(payload);
 
-  //if (response.status !== "VALID") {
-  //  return { message: "Payment failed" };
-  //}
+  if (response.status !== "VALID") {
+    return { message: "Payment failed" };
+  }
 
   // TEMP RESPONSE FOR CHECKING SSL INTEGRATION
-  const response = payload;
+  //const response = payload;
 
   await prisma.$transaction(async (tx) => {
     const paymentData = await tx.payment.update({
