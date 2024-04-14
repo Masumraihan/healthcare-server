@@ -62,7 +62,7 @@ const getAllDoctor = async (query: IDoctorFilterRequest, option: IPaginationOpti
             [option.sortBy]: option.sortOrder,
           }
         : {
-            createdAt: "desc",
+            averageRating: "desc",
           },
     include: {
       doctorSpecialties: {
