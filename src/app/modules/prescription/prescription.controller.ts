@@ -4,6 +4,7 @@ import sendResponse from "../../../shared/sendResponse";
 import { prescriptionService } from "./prescription.service";
 import { JwtPayload } from "jsonwebtoken";
 import pick from "../../../shared/pick";
+import { prescriptionFilterableFields } from "./prescription.constant";
 
 const insertIntoDb = catchAsync(async (req, res) => {
   const user = req.user as JwtPayload;
@@ -18,8 +19,9 @@ const insertIntoDb = catchAsync(async (req, res) => {
 });
 
 const getAllFromDb = catchAsync(async (req, res) => {
-  const filterQuery = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
-  const result = await prescriptionService.getAllFromDb(filterQuery);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const filterQuery = pick(req.query, prescriptionFilterableFields);
+  const result = await prescriptionService.getAllFromDb(filterQuery, options);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -27,7 +29,7 @@ const getAllFromDb = catchAsync(async (req, res) => {
     meta: result.meta,
     data: result.data,
   });
-})
+});
 
 const myPrescriptions = catchAsync(async (req, res) => {
   const user = req.user as JwtPayload;
