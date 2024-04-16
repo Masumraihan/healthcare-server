@@ -28,6 +28,25 @@ const insertIntoDb = async (user: JwtPayload, payload: Partial<Prescription>) =>
   return result;
 };
 
+const getAllFromDb = async (options: IPaginationOptions) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const result = await prisma.prescription.findMany({
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: "desc" },
+  });
+  const total = await prisma.prescription.count();
+  const meta = {
+    page,
+    limit,
+    total,
+  };
+  return { data: result, meta };
+};
+
 const myPrescriptions = async (user: JwtPayload, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const result = await prisma.prescription.findMany({
@@ -63,5 +82,6 @@ const myPrescriptions = async (user: JwtPayload, options: IPaginationOptions) =>
 
 export const prescriptionService = {
   insertIntoDb,
+  getAllFromDb,
   myPrescriptions,
 };

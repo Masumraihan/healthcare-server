@@ -17,6 +17,18 @@ const insertIntoDb = catchAsync(async (req, res) => {
   });
 });
 
+const getAllFromDb = catchAsync(async (req, res) => {
+  const filterQuery = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const result = await prescriptionService.getAllFromDb(filterQuery);
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Prescription fetched successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+})
+
 const myPrescriptions = catchAsync(async (req, res) => {
   const user = req.user as JwtPayload;
   const filterQuery = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
@@ -31,5 +43,6 @@ const myPrescriptions = catchAsync(async (req, res) => {
 });
 export const prescriptionController = {
   insertIntoDb,
+  getAllFromDb,
   myPrescriptions,
 };

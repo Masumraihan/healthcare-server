@@ -2,7 +2,10 @@ import { JwtPayload } from "jsonwebtoken";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiError";
 import { StatusCodes } from "http-status-codes";
-import { Review } from "@prisma/client";
+import { Prisma, Review } from "@prisma/client";
+import { IPaginationOptions } from "../../interfaces/pagination";
+import { reviewRelationalFields, reviewRelationalFieldsMapper } from "./review.constant";
+import { paginationHelper } from "../../../helpers/paginationHelpers";
 
 const insertIntoDb = async (user: JwtPayload, payload: Partial<Review>) => {
   const patientData = await prisma.patient.findUniqueOrThrow({
@@ -51,7 +54,7 @@ const insertIntoDb = async (user: JwtPayload, payload: Partial<Review>) => {
         id: appointmentData.doctorId,
       },
       data: {
-        averageRating: (doctorAverageRating._avg?.rating as number) || 0.0, // 0.0 as default averageRating
+        averageRating: doctorAverageRating._avg?.rating as number,
       },
     });
     return reviewData;
@@ -60,6 +63,58 @@ const insertIntoDb = async (user: JwtPayload, payload: Partial<Review>) => {
   return result;
 };
 
+const getAllFromDb = async (filter: any, option: IPaginationOptions) => {
+  const andConditions: Prisma.ReviewWhereInput[] = [];
+  const { sortBy, sortOrder, limit, page, skip } = paginationHelper.calculatePagination(option);
+
+  if (Object.keys(filter).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filter).map((key) => {
+        if (reviewRelationalFields.includes(key)) {
+          return {
+            [reviewRelationalFieldsMapper[key]]: {
+              email: (filter as any)[key],
+            },
+          };
+        } else {
+          return {
+            [key]: {
+              equal: (filter as any)[key],
+            },
+          };
+        }
+      }),
+    });
+  }
+
+  const reviewWhereCondition: Prisma.ReviewWhereInput = {
+    AND: andConditions,
+  };
+
+  const result = await prisma.review.findMany({
+    where: reviewWhereCondition,
+    skip,
+    take: limit,
+    orderBy:
+      sortBy && sortOrder
+        ? { [sortBy]: sortOrder }
+        : {
+            createdAt: "desc",
+          },
+    include: {
+      patient: true,
+      doctor: true,
+    },
+  });
+
+  const total = await prisma.review.count({
+    where: reviewWhereCondition,
+  });
+
+  return { data: result, meta: { total, page, limit } };
+};
+
 export const reviewService = {
   insertIntoDb,
+  getAllFromDb,
 };
