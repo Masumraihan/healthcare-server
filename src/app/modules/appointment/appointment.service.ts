@@ -246,7 +246,7 @@ const cancelUnpaidAppointment = async () => {
   });
   const unPaidAppointmentIds = unPaidAppointments.map((appointment) => appointment.id);
 
-  const result = await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.payment.deleteMany({
       where: {
         appointmentId: {
