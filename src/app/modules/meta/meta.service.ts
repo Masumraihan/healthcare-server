@@ -86,7 +86,6 @@ const getDoctorMeTaData = async (user: JwtPayload) => {
       count: _count.id,
     }),
   );
-  console.log(formattedAppointmentStatusDistribution);
 };
 const getPatientMeTaData = async () => {};
 
