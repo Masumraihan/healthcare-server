@@ -20,6 +20,7 @@ const fetchDashboardMetaData = async (user: JwtPayload) => {
     default:
       throw new Error("Invalid role");
   }
+
   return metaData;
 };
 
@@ -37,6 +38,8 @@ const getSuperAdminMeTaData = async () => {
       status: PaymentStatus.PAID,
     },
   });
+  const barChartData = await getBarChartData();
+  const pieChartData = await getPieChartData();
   return {
     appointmentCount,
     adminCount,
@@ -44,6 +47,8 @@ const getSuperAdminMeTaData = async () => {
     patientCount,
     paymentCount,
     totalRevenue,
+    barChartData,
+    pieChartData,
   };
 };
 const getAdminMeTaData = async () => {
@@ -59,12 +64,16 @@ const getAdminMeTaData = async () => {
       status: PaymentStatus.PAID,
     },
   });
+  const barChartData = await getBarChartData();
+  const pieChartData = await getPieChartData();
   return {
     appointmentCount,
     doctorCount,
     patientCount,
     paymentCount,
     totalRevenue,
+    barChartData,
+    pieChartData,
   };
 };
 const getDoctorMeTaData = async (user: JwtPayload) => {
@@ -165,6 +174,34 @@ const getPatientMeTaData = async (user: JwtPayload) => {
     prescriptionCount,
     appointmentStatusDistribution: formattedAppointmentStatusDistribution,
   };
+};
+
+const getBarChartData = async () => {
+  const appointmentCountByMonth: { month: Date; count: bigint }[] = await prisma.$queryRaw`
+  SELECT DATE_TRUNC('month', "createdAt") AS month,
+ CAST(COUNT(*) AS INTEGER) AS count
+ FROM "appointments"
+ GROUP BY month
+ ORDER BY month ASC
+`;
+
+  return appointmentCountByMonth;
+};
+
+const getPieChartData = async () => {
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: "status",
+    _count: {
+      id: true,
+    },
+  });
+  const formattedAppointmentStatusDistribution = appointmentStatusDistribution.map(
+    ({ status, _count }) => ({
+      status,
+      count: _count.id,
+    }),
+  );
+  return formattedAppointmentStatusDistribution;
 };
 
 export const metaService = {

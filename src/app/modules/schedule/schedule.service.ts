@@ -8,12 +8,21 @@ import { JwtPayload } from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import ApiError from "../../errors/ApiError";
 
+const convertDateTime = async (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() + offset);
+};
+
 const insertIntoDb = async (payload: ISchedule): Promise<Schedule[]> => {
-  const intervalTime = 30;
-  const schedules: Schedule[] = [];
   const { startDate, endDate, startTime, endTime } = payload;
+
+  const intervalTime = 30;
+
+  const schedules: Schedule[] = [];
+
   const currentDate = new Date(startDate);
   const lastDate = new Date(endDate);
+
   while (currentDate <= lastDate) {
     const startDateTime = new Date(
       addMinutes(
@@ -28,22 +37,36 @@ const insertIntoDb = async (payload: ISchedule): Promise<Schedule[]> => {
       ),
     );
 
+    console.log(startDateTime, addMinutes(startDateTime, intervalTime));
+
     while (startDateTime < endDateTime) {
+      //const scheduleData = {
+      //  startDateTime,
+      //  endDateTime: addMinutes(startDateTime, intervalTime),
+      //};
+
+      const s = await convertDateTime(startDateTime);
+      const e = await convertDateTime(addMinutes(startDateTime, intervalTime));
+      console.log(startDateTime, endDateTime);
+
       const scheduleData = {
-        startDateTime,
-        endDateTime: addMinutes(startDateTime, intervalTime),
+        startDate: s,
+        endDate: e,
       };
 
       const existingScheduleData = await prisma.schedule.findFirst({
         where: {
-          startDateTime: scheduleData.startDateTime,
-          endDateTime: scheduleData.endDateTime,
+          startDateTime: scheduleData.startDate,
+          endDateTime: scheduleData.endDate,
         },
       });
 
       if (!existingScheduleData) {
         const result = await prisma.schedule.create({
-          data: scheduleData,
+          data: {
+            startDateTime: scheduleData.startDate,
+            endDateTime: scheduleData.endDate,
+          },
         });
         schedules.push(result);
       }
@@ -55,7 +78,6 @@ const insertIntoDb = async (payload: ISchedule): Promise<Schedule[]> => {
   }
   return schedules;
 };
-
 const getAllFromDb = async (
   query: IScheduleFilter,
   option: IPaginationOptions,
