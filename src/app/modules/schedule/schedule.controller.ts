@@ -24,7 +24,8 @@ const getAllFromDb = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: "Schedule fetched successfully!",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
@@ -35,7 +36,7 @@ const getByIdFromDb = catchAsync(async (req, res) => {
     success: true,
     message: "Schedule fetched successfully!",
     data: result,
-  })
+  });
 });
 
 const deleteById = catchAsync(async (req, res) => {
@@ -46,7 +47,7 @@ const deleteById = catchAsync(async (req, res) => {
     message: "Schedule deleted successfully",
     data: result,
   });
-})
+});
 
 export const scheduleController = {
   insertIntoDb,

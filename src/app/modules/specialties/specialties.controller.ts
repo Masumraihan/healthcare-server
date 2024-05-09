@@ -24,8 +24,8 @@ const getAllFromDb = catchAsync(async (req, res) => {
   });
 });
 const deleteFromDb = catchAsync(async (req, res) => {
+  console.log({ id: req.params.id });
   const result = await specialtiesService.deleteFromDb(req.params.id);
-
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

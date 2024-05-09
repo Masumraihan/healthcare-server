@@ -13,7 +13,11 @@ router.post(
   validateRequest(scheduleValidations.create),
   scheduleController.insertIntoDb,
 );
-router.get("/", auth(UserRole.DOCTOR), scheduleController.getAllFromDb);
+router.get(
+  "/",
+  auth(UserRole.DOCTOR, UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  scheduleController.getAllFromDb,
+);
 router.get(
   "/:id",
   auth(UserRole.DOCTOR, UserRole.SUPER_ADMIN, UserRole.ADMIN),

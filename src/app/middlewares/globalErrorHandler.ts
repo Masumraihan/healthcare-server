@@ -6,6 +6,7 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
   let statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   let message = err.message || "Something went wrong!";
   let success = false;
+  console.log(err);
   let error = null;
   if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Validation error";

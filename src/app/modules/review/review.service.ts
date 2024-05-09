@@ -11,6 +11,7 @@ const insertIntoDb = async (user: JwtPayload, payload: Partial<Review>) => {
   const patientData = await prisma.patient.findUniqueOrThrow({
     where: {
       email: user.email,
+      isDeleted: false,
     },
   });
 
