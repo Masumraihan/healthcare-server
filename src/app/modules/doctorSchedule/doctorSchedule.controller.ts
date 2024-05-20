@@ -19,12 +19,13 @@ const getMySchedules = catchAsync(async (req, res) => {
   const filterQuery = pick(req.query, ["startDate", "endDate", "isBooked"]);
   const option = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
   const user = req.user as JwtPayload;
-  const result = await doctorScheduleService.getMySchedules(filterQuery, option, user);
+  const { data, meta } = await doctorScheduleService.getMySchedules(filterQuery, option, user);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: "My Schedule fetched successfully!",
-    data: result,
+    data,
+    meta,
   });
 });
 const getAllFromDb = catchAsync(async (req, res) => {

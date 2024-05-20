@@ -84,7 +84,7 @@ const changePassword = async (
 
   const isCorrectPassword: boolean = await bcrypt.compare(payload.oldPassword, userData.password);
   if (!isCorrectPassword) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, "old password incorrect");
+    throw new ApiError(StatusCodes.BAD_REQUEST, "old password incorrect");
   }
   const hashedPassword = await bcrypt.hash(payload.newPassword, 12);
 

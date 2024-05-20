@@ -241,6 +241,7 @@ const updateMyProfile = async (user: JwtPayload, req: Request) => {
 
   const file = req.file as IFile;
 
+  console.log({ user, file });
   if (file) {
     const uploadImageToCloudinary = await fileUploader.uploadToCloudinary(file);
     req.body.profilePhoto = uploadImageToCloudinary?.secure_url;

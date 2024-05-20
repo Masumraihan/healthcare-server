@@ -21,7 +21,6 @@ const getAllFromDb = async () => {
 };
 
 const deleteFromDb = async (id: string) => {
-  console.log({ id });
   const result = await prisma.specialties.delete({
     where: {
       id,

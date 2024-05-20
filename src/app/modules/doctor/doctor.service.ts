@@ -93,6 +93,9 @@ const getByIdFromDb = async (id: string): Promise<Doctor | null> => {
       id,
       isDeleted: false,
     },
+    include: {
+      doctorSpecialties: true,
+    },
   });
   return result;
 };
